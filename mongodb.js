@@ -52,7 +52,27 @@ MongoClient.connect(
     //   }
     // );
 
-    
-
+    db.collection("tasks").insertMany(
+      [
+        {
+          description: "Do Laundry",
+          completed: true,
+        },
+        {
+          description: "Daily Reading",
+          completed: true,
+        },
+        {
+          description: "Daily workout",
+          completed: false,
+        },
+      ],
+      (error, result) => {
+        if (error) {
+          return console.log("Tasks Not Inserted!");
+        }
+        console.log(result.ops);
+      }
+    );
   }
 );
