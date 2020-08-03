@@ -64,22 +64,25 @@ me.save()
 const Task = mongoose.model("Task", {
   description: {
     type: String,
+    trim: true,
+    required: true,
   },
   completed: {
     type: Boolean,
+    default: false,
   },
 });
 
-// const task = new Task({
-//   description: "Do Laundry",
-//   completed: false,
-// });
+const task = new Task({
+  description: "Do Laundry",
+  completed: false,
+});
 
-// task
-//   .save()
-//   .then(() => {
-//     console.log(task);
-//   })
-//   .catch((error) => {
-//     console.log(error);
-//   });
+task
+  .save()
+  .then(() => {
+    console.log(task);
+  })
+  .catch((error) => {
+    console.log(error);
+  });
