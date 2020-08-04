@@ -8,6 +8,8 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 
+//RESOURCE CREATION ENDPOINTS
+
 app.post("/users", (req, res) => {
   const user = new User(req.body);
 
@@ -31,6 +33,33 @@ app.post("/tasks", (req, res) => {
     })
     .catch((e) => {
       res.status(400).send(e);
+    });
+});
+
+//RESOURCE READING ENDPOINTS
+
+app.get("/users", (req, res) => {
+  User.find({})
+    .then((users) => {
+      res.send(users);
+    })
+    .catch((e) => {
+      res.status(500).send();
+    });
+});
+
+app.get("/users/:id", (req, res) => {
+  const _id = req.params.id;
+
+  User.findById(_id)
+    .then((user) => {
+      if (!user) {
+        return res.status(404).send();
+      }
+      res.send(user);
+    })
+    .catch((e) => {
+      res.status(500).send();
     });
 });
 
