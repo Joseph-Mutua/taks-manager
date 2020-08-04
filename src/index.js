@@ -36,7 +36,7 @@ app.post("/tasks", (req, res) => {
     });
 });
 
-//RESOURCE READING ENDPOINTS
+//RESOURCE READING ENDPOINTS FOR USERS
 
 app.get("/users", (req, res) => {
   User.find({})
@@ -57,6 +57,33 @@ app.get("/users/:id", (req, res) => {
         return res.status(404).send();
       }
       res.send(user);
+    })
+    .catch((e) => {
+      res.status(500).send();
+    });
+});
+
+//RESOURCE READING ENDPOINTS FOR TASKS
+
+app.get("/tasks", (req, res) => {
+  Task.find({})
+    .then((tasks) => {
+      res.send(tasks);
+    })
+    .catch((e) => {
+      res.status(500).send();
+    });
+});
+
+app.get("/tasks/:id", (req, res) => {
+  const _id = req.params.id;
+
+  Task.findById(_id)
+    .then((task) => {
+      if (!task) {
+        return res.status(404).send();
+      }
+      res.send(task);
     })
     .catch((e) => {
       res.status(500).send();
