@@ -53,7 +53,7 @@ app.get("/users/:id", async (req, res) => {
     }
     res.send(user);
   } catch (e) {
-    res.status(500).send();
+    res.status(500).send(e);
   }
 });
 
@@ -64,7 +64,7 @@ app.get("/tasks", async (req, res) => {
     const tasks = await Task.find({});
     res.send(tasks);
   } catch (e) {
-    res.status(500).send();
+    res.status(500).send(e);
   }
 });
 
@@ -78,10 +78,65 @@ app.get("/tasks/:id", async (req, res) => {
     }
     res.send(task);
   } catch (e) {
-    res.status(500).send();
+    res.status(500).send(e);
   }
 });
 
 app.listen(port, () => {
   console.log(`Server is up on port ${port}`);
+});
+
+//UPDATING USERS ENDPOINTS
+
+app.patch("/users/:id", async (req, res) => {
+  const updates = Object.keys(req.body);
+  const allowedUpdates = ["name", "email", "password", "age"];
+  const isValidOperation = updates.every((update) =>
+    allowedUpdates.includes(update)
+  );
+
+  if (!isValidOperation) {
+    return res.status(400).send({ Error: "Invalid Operation" });
+  }
+
+  try {
+    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    if (!user) {
+      return res.status(404).send(e);
+    }
+    res.send(user);
+  } catch (e) {
+    res.status(400).send(e);
+  }
+});
+
+//UPDATING TASKS ENDPOINTS
+
+app.patch("/tasks/:id", async (req, res) => {
+  const updates = Object.keys(req.body);
+  const allowedUpdates = ["completed"];
+  const isValidOperation = updates.every((update) =>
+    allowedUpdates.includes(update)
+  );
+
+  if (!isValidOperation) {
+    return res.status(400).send({ Error: "Invalid Operation!" });
+  }
+
+  try {
+    const task = await Task.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!task) {
+      return res.status(404).send(e);
+    }
+    res.send(task);
+  } catch (e) {
+    res.status(400).send(e);
+  }
 });
