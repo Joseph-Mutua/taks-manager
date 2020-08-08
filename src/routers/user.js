@@ -2,6 +2,7 @@ const express = require("express");
 const router = new express.Router();
 const auth = require("../middleware/auth");
 const User = require("../models/user");
+const { request } = require("express");
 
 //CREATE A USER
 
@@ -18,6 +19,8 @@ router.post("/users", async (req, res) => {
   }
 });
 
+//LOGIN USERS
+
 router.post("/users/login", async (req, res) => {
   try {
     const user = await User.findByCredentials(
@@ -30,6 +33,31 @@ router.post("/users/login", async (req, res) => {
     res.status(400).send(e);
   }
 });
+
+//LOGOUT USERS
+router.post("/users/logout", auth, async (req, res) => {
+  try {
+    req.user.tokens = req.user.tokens.filter((token) => {
+      return token.token !== request.token;
+    });
+    await req.user.save();
+    res.send();
+  } catch (e) {
+    res.status(500).send(e);
+  }
+});
+
+//LOGOUT OF ALL SESSIONS
+
+router.post("/users/logoutAll", auth, async(req, res) => {
+  try {
+      req.user.tokens =[]
+      await req.user.save()
+      res.send()
+  }catch(e){
+    res.status(500).send()
+  }
+})
 
 //READ USERS
 
@@ -44,7 +72,7 @@ router.get("/users", async (req, res) => {
 
 //ACCESS YOUR PROFILE PAGE
 router.get("/users/me", auth, async (req, res) => {
-  res.send(req.user)
+  res.send(req.user);
 });
 
 //READ ONE USER
