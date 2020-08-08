@@ -52,13 +52,20 @@ const userSchema = new mongoose.Schema({
   ],
 });
 
+//USER-TASK VIRTUAL RELATIONSHIP
+
+userSchema.virtual("tasks", {
+  ref: "Task",
+  localField: "_id",
+  foreignField: "owner",
+});
+
 userSchema.methods.generateAuthToken = async function () {
   const user = this;
   const token = jwt.sign({ _id: user._id.toString() }, "thisismynewtoken");
 
   user.tokens = user.tokens.concat({ token });
   await user.save();
-  
 
   return token;
 };
@@ -75,6 +82,16 @@ userSchema.statics.findByCredentials = async (email, password) => {
     throw new Error("Unable to Login");
   }
   return user;
+};
+
+userSchema.methods.toJSON = function () {
+  const user = this;
+  const userObject = user.toObject();
+
+  delete userObject.password;
+  delete userObject.tokens;
+
+  return userObject;
 };
 
 //Hash the plain-text password before saving
