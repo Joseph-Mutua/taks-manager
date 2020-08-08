@@ -1,5 +1,6 @@
 const express = require("express");
 const router = new express.Router();
+const auth = require("../middleware/auth");
 const User = require("../models/user");
 
 //CREATE A USER
@@ -39,6 +40,11 @@ router.get("/users", async (req, res) => {
   } catch (e) {
     res.status(500).send(e);
   }
+});
+
+//ACCESS YOUR PROFILE PAGE
+router.get("/users/me", auth, async (req, res) => {
+  res.send(req.user)
 });
 
 //READ ONE USER
