@@ -24,7 +24,7 @@ beforeEach(async () => {
 
 //TEST TO SIGNUP NEW USER
 test("Should signup a new user", async () => {
-  await request(app)
+  const response = await request(app)
     .post("/users")
     .send({
       name: "Andrew",
@@ -32,6 +32,20 @@ test("Should signup a new user", async () => {
       password: "MyPass777!",
     })
     .expect(201);
+
+  //ASSERT THAT THE DATABASE WAS CHANGED SUCCESSFULLY
+  const user = await User.findById(response.body.user);
+  expect(user).not.toBeNull();
+
+  //ASSERTION ABOUT THE RESPONSE
+  expect(response.body.user.name).toBe("Andrew");
+  expect(response.body).toMatchObject({
+      user: {
+          name: "Andrew",
+          email: "andrew@example.com",         
+      },
+      token: user.tokens[0].token
+  })
 });
 
 //SHOULD LOGIN EXISTING USER
