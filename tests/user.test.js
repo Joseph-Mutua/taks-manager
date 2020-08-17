@@ -1,14 +1,27 @@
 const request = require("supertest");
+const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose");
 const app = require("../src/app");
+const User = require("../src/models/user");
 
-beforeEach(() => {
-  console.log("BeforeEach");
+const userOneId = new mongoose.Types.ObjectId();
+const userOne = {
+  name: "Joseph",
+  email: "Mutuaj64@gmail.com",
+  password: "Gridlock",
+  tokens: [
+    {
+      token: jwt.sign({ _id: userOneId }, process.env.JWT_SECRET_TOKEN),
+    },
+  ],
+};
+
+beforeEach(async () => {
+  await User.deleteMany();
+  await new User(userOne).save();
 });
 
-afterEach(() => {
-  console.log("afterEach");
-});
-
+//SIGNUP A USER
 test("Should Sign up a new user", async () => {
   await request(app)
     .post("/users")
@@ -19,3 +32,4 @@ test("Should Sign up a new user", async () => {
     })
     .expect(201);
 });
+
