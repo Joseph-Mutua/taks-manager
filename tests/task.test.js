@@ -5,6 +5,7 @@ const { userOneId, userOne, setupDatabase } = require("./fixtures/db");
 
 beforeEach(setupDatabase);
 
+//SHOULD CREATE TASK FOR USER
 test("Should create task for user", async () => {
   const response = await request(app)
     .post("/tasks")
@@ -16,4 +17,14 @@ test("Should create task for user", async () => {
   const task = await Task.findById(response.body._id);
   expect(task).not.toBeNull();
   expect(task.completed).toEqual(false);
+});
+
+//SHOULD FETCH USER TASKS
+test("Should fetch user tasks", async () => {
+  const response = await request(app)
+    .get("/tasks")
+    .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
+    .send()
+    .expect(200);
+  expect(response.body.length).toEqual(1);
 });
