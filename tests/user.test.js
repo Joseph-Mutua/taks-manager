@@ -59,12 +59,9 @@ test("Should login existing user", async () => {
       password: userOne.password,
     })
     .expect(200);
-    const user = await User.findById(userOneId)
-    expect(response.body.token).toBe(user.tokens[1].token)
-
+  const user = await User.findById(userOneId);
+  expect(response.body.token).toBe(user.tokens[1].token);
 });
-
-
 
 //SHOULD NOT LOGIN NONEXISTENT USER
 test("Should not login nonexistent user", async () => {
@@ -98,8 +95,8 @@ test("Should delete account for user", async () => {
     .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
     .send()
     .expect(200);
-    const user = await User.findById(userOneId)
-    expect(user).toBeNull()
+  const user = await User.findById(userOneId);
+  expect(user).toBeNull();
 });
 
 //SHOULD NOT DELETE ACCOUNT FOR UNAUTHENTICATED USER
@@ -108,5 +105,13 @@ test("Should not delete account for unauthenticated user", async () => {
 });
 
 test("Should upload avatar image", async () => {
-    
-})
+  await request(app)
+    .post("/users/me/avatar")
+    .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
+    .attach("avatar", "tests/fixtures/profile-pic.jpg")
+    .expect(200);
+  const user = await User.findById(userOneId);
+  expect(user.avatar).toEqual(expect.any(Buffer));
+});
+
+
