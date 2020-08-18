@@ -102,7 +102,7 @@ router.get("/users/:id", async (req, res) => {
 
 //UPDATE A USER
 
-router.patch("/users/me", async (req, res) => {
+router.patch("/users/me", auth, async (req, res) => {
   const updates = Object.keys(req.body);
   const allowedUpdates = ["name", "email", "password", "age"];
   const isValidOperation = updates.every((update) =>
@@ -123,7 +123,7 @@ router.patch("/users/me", async (req, res) => {
     }
     res.send(user);
   } catch (e) {
-    res.status(400).send(e);
+    res.status(400).send();
   }
 });
 
